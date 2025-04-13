@@ -117,7 +117,7 @@ const Cadena& Usuario::Id_duplicado::idd() const noexcept{return identifdupl;}
 
 
 
-void mostrar_carro(const Articulos&a, const Usuario& user)
+void mostrar_carro(const Usuario::Articulos&a, const Usuario& user)
 {
     cout<<"Carrito de compra de "<<user.ident<<" [Articulos]"<<a.size()<<endl;
     cout<<"Cant. Artículo"<<endl;
@@ -128,9 +128,6 @@ void mostrar_carro(const Articulos&a, const Usuario& user)
     while(it!=user.art.end())
     {
         cout<<*it->second<<endl;
-
-
-
     }
 
 }
