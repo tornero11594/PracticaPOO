@@ -1,5 +1,122 @@
 #include"tarjeta.hpp"
 
+
+//IMPLEMENTACIÓN DE LA CLASE TARJETA
+Tarjeta::Tarjeta(const Numero&numerillo, Usuario*uuser,const Fecha&fechia,bool ac):num{numerillo},tit{uuser},cad{fechia},activ{true}
+{
+    //comprobamos primero si la tarjeta está caducada
+    Fecha hoy;
+
+    if(cad<hoy)
+    {
+        Caducada I(cad);
+        throw I;
+    }
+
+    else
+    {
+        //no está caducada, miramos si ya existe una tarjeta con ese número
+        typedef set<Numero>::iterator iterador;
+        std::pair<iterador,bool> res=conjuntotarjetas.insert(num);
+
+        if(!res.second) //inserción fallida, lanzamos excepción de número duplicado
+        {
+            Num_duplicado I(num);
+            throw I;
+        }
+    }
+}
+
+//métodos observadores
+const Numero& Tarjeta::numero() const noexcept{return num;}
+const Usuario* Tarjeta::titular() const noexcept{return tit;}
+const Fecha& Tarjeta::caducidad() const noexcept{return cad;}
+bool Tarjeta::activa() const noexcept{return activ;}
+Tarjeta::Tipo Tarjeta::tipo() const noexcept
+{   
+    const char* cadena=num;
+
+    if((cadena[0]=='3' && cadena[1]=='4') || (cadena[0]=='3' && cadena[1]=='7'))
+    return AmericanExpress;
+
+    else
+    {
+        if(cadena[0]=='3' && (cadena[1]!='7' && cadena[1]!='4'))
+        return JCB;
+
+        else 
+        {
+            if(cadena[0]=='4')
+            return VISA;
+
+            else
+            {
+                if(cadena[0]=='5')
+                return Mastercard;
+
+                else
+                {
+                    if(cadena[0]=='6')
+                        return Maestro;
+
+                    return Otro;
+                }
+            }
+
+        }
+
+    }
+}
+
+//Método para activar/desactivar una tarjeta
+bool Tarjeta::activa(bool est) 
+{
+    activ=est;
+    return activ;
+}
+
+
+//modificador para poner la tarjeta en false y el puntero de titular a nulo
+void Tarjeta::anula_titular()
+{
+    activ=false;
+    tit=nullptr;
+    
+}
+
+//operador para mostrar la tarjeta por pantalla
+ostream& operator<<(ostream&os, const Tarjeta&t)
+{
+    os<<t.tipo()<<endl;
+    os<<t.num<<endl;
+    os<<t.tit<<endl;
+    os<<"Caduca: "<<t.cad.mes()<<"/"<<t.cad.anno()%100<<endl;
+
+}
+
+//comparar dos tarjetas
+bool operator<(const Tarjeta&t1,const Tarjeta&t2)
+{
+    return(t1.num<t2.num);
+}
+
+
+//destructor que desvinculará al usuario
+Tarjeta::~Tarjeta()
+{
+    if(!tit) //si no ha sido desvinculada, la desvinculamos
+    {
+    const_cast<Usuario *>(tit)->no_es_titular_de(*this); 
+    tit=nullptr;
+    }
+
+    conjuntotarjetas.erase(num); //eliminamos la tarjeta del conjunto de números
+}
+
+
+
+
+//IMPLEMENTACIÓN DE LA CLASE NÚMERO
 Numero::Numero(Cadena& cad) //no inicializo porque puede ser incorrecto
 {
 

@@ -35,6 +35,7 @@ void Usuario::es_titular_de(Tarjeta& tar)
 void Usuario::no_es_titular_de(Tarjeta& tar)
 {
     tarjetas_.erase(tar.numero()); //borramos por numero de la tarjeta
+    tar.anula_titular();
 }
 
 
@@ -105,6 +106,8 @@ Usuario::~Usuario()
             it->second->anula_titular();
             it++;
     }
+
+    ids.erase(ident); //eliminamos al usuario del conjunto
 }
 
 

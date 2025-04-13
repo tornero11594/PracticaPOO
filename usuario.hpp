@@ -1,3 +1,6 @@
+#ifndef USUARIO_HPP
+#define USUARIO_HPP
+
 #include"cadena.hpp"
 #include"fecha.hpp"
 #include"tarjeta.hpp"
@@ -46,7 +49,7 @@ class Usuario
 
 
     //Metodo para asociacion con Artículo
-    void compra(const Articulo&,size_t cantidad=1);
+    void compra(Articulo&,size_t cantidad=1);
 
     //método para vaciar el carro
     void vaciar_carro();
@@ -142,3 +145,4 @@ class Clave
     };
 };
 
+#endif
