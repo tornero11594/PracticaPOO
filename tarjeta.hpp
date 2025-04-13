@@ -3,6 +3,12 @@
 #include<iostream>
 using namespace std;
 
+class Tarjeta;
+
+
+
+
+
 class Numero
 {
 
