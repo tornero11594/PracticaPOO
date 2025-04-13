@@ -6,7 +6,7 @@ Numero::Numero(Cadena& cad) //no inicializo porque puede ser incorrecto
     //depuración
     //cout<<cad.length()<<endl;
 
-    if(cad.length() >=13 && cad.length()<=19) //comprobamos que no esté vacía
+    if(cad.length() >=13 && cad.length()<=19) //comprobamos que cumpla el minimo
     {
         //primero, debemos quitar los espacios en blanco
         size_t j=0;
@@ -31,6 +31,13 @@ Numero::Numero(Cadena& cad) //no inicializo porque puede ser incorrecto
                 flag=true;
             }
         }
+
+        if(cad.length() <13) //comprobamos que cumpla el minimo al quitarle los espacios
+        {
+            Incorrecto I(LONGITUD);
+            throw I;
+        }
+
 
         if(flag)
         {

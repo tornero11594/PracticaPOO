@@ -36,7 +36,7 @@ int main()
         exit(1);
     }
 
-
+    cout<<"Segunda tarejta correcta"<<endl;
 
 
 
