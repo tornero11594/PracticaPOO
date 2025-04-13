@@ -5,6 +5,7 @@ using namespace std;
 
 int main()
 {
+    //ahora funciona bien
     try
     {
  
