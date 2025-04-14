@@ -1,5 +1,5 @@
 #include"tarjeta.hpp"
-
+#include"usuario.hpp"
 
 //IMPLEMENTACIÓN DE LA CLASE TARJETA
 Tarjeta::Tarjeta(const Numero&numerillo, Usuario&uuser,const Fecha&fechia,bool ac):num{numerillo},tit{&uuser},cad{fechia},activ{true}

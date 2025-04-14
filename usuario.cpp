@@ -1,5 +1,5 @@
 #include"usuario.hpp"
-
+#include"tarjeta.hpp"
 
 
 //IMPLEMENTACIÓN DE LA CLASE USUARIO
@@ -80,12 +80,12 @@ size_t Usuario::n_articulos() const noexcept
 //Imprimir info de un usuario por pantalla
 ostream& operator<<(ostream&os, const Usuario& user)
 {
-    os<<user.ident<<" ["<<user.contrasena<<"] "<<user.nom<<" "<<user.apell<< endl;
+    os<<user.ident<<" [" <<user.contrasena<<"] "<<user.nom<<" "<<user.apell<< endl;
     os<<user.dir<<endl;
     os<<"Tarjetas:"<<endl;
 
     auto it=user.tarjetas_.begin();
-    while(it!=user.tarjetas_.end()) //recorremos las tarjetas
+    while(it!=user.tarjetas_.end()) //recorremos las tarjetas de un usuario para imprimirlas
     {
         os<<*it->second<<endl;
         ++it;
@@ -118,7 +118,7 @@ Usuario::Id_duplicado::Id_duplicado(const Cadena&dup):identifdupl{dup}
 const Cadena& Usuario::Id_duplicado::idd() const noexcept{return identifdupl;}
 
 
-
+     
 
 void mostrar_carro(const Usuario::Articulos&a, const Usuario& user)
 {
@@ -130,7 +130,7 @@ void mostrar_carro(const Usuario::Articulos&a, const Usuario& user)
 
     while(it!=user.art.end())
     {
-        cout<<*it->second<<endl;
+        cout<<*it->first<<endl; //imprimimos las tarjetas
     }
 
 }
@@ -206,4 +206,8 @@ Clave::Incorrecta::Incorrecta(Razon raz) noexcept :r{raz}
 
 Clave::Razon Clave::Incorrecta::razon() const noexcept{return r;}
 
-
+ostream& operator<<(ostream&os,const Clave&clav)
+{
+    os<<clav.clavecifrada;
+    return os;
+}

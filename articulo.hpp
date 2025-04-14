@@ -1,9 +1,13 @@
+#ifndef ARTICULO_HPP
+#define ARTICULO_HPP
+
 #include"cadena.hpp"
 #include"fecha.hpp"
 #include<istream>
 #include<ostream>
 #include<iomanip>
 using namespace std;
+
 
 class Articulo
 {
@@ -39,3 +43,5 @@ class Articulo
 
 
 };
+
+#endif

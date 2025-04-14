@@ -3,7 +3,6 @@
 
 #include"cadena.hpp"
 #include"fecha.hpp"
-#include"tarjeta.hpp"
 #include"articulo.hpp"
 #include<istream>
 #include<ostream>
@@ -15,6 +14,57 @@
 #include<unordered_map>
 #include<unordered_set>
 using namespace std;
+
+
+class Tarjeta;
+class Numero;
+
+class Clave
+{
+    public:
+
+    //Constructor
+    Clave(const char*); 
+
+     //observador para devolver la clave cifrada
+    const Cadena& clave() const noexcept;
+
+    //verfica si la clave cifrada es correcta
+    bool verifica(const char*) const noexcept; 
+
+
+    friend ostream& operator<<(ostream&os,const Clave&);
+
+    private:
+    Cadena clavecifrada;
+    static const char caracteres_validos[];
+
+    enum Razon{CORTA,ERROR_CRYPT}; //enumerado para la clase Incorrecta
+
+
+
+
+    public:
+    //clase para excepciones
+    class Incorrecta
+    {
+     
+        private:
+        Razon r;
+        
+        
+        public:
+        //Constructor
+        Incorrecta(Razon raz) noexcept;
+
+
+        //Observador
+        Razon razon() const noexcept;
+
+    };
+};
+
+
 
 class Usuario
 {
@@ -103,46 +153,5 @@ class Usuario
 
 
 
-class Clave
-{
-    public:
-
-    //Constructor
-    Clave(const char*); 
-
-     //observador para devolver la clave cifrada
-    const Cadena& clave() const noexcept;
-
-    //verfica si la clave cifrada es correcta
-    bool verifica(const char*) const noexcept; 
-
-
-    private:
-    Cadena clavecifrada;
-    static const char caracteres_validos[];
-
-
-    enum Razon{CORTA,ERROR_CRYPT}; //enumerado para la clase Incorrecta
-
-
-    public:
-    //clase para excepciones
-    class Incorrecta
-    {
-     
-        private:
-        Razon r;
-        
-        
-        public:
-        //Constructor
-        Incorrecta(Razon raz) noexcept;
-
-
-        //Observador
-        Razon razon() const noexcept;
-
-    };
-};
 
 #endif

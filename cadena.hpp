@@ -2,12 +2,11 @@
 #define CADENA_HPP
 #include <cstring>
 #include <stdexcept>
-#include<iterator>
-
+#include <iterator>
+#include <functional>
 
 class Cadena
 {
-
 public:
     // -----CONSTRUCTORES -----
     Cadena(size_t, char);
@@ -15,16 +14,12 @@ public:
     Cadena();
     Cadena(const char *);
     Cadena(const Cadena &);
-    Cadena(Cadena&& c) noexcept; //constructor de movimiento
-
-
-
+    Cadena(Cadena &&c) noexcept; // constructor de movimiento
 
     //----- ASIGNACION DE CADENAS -----
     Cadena &operator=(const Cadena &);
     Cadena &operator=(const char *);
-    Cadena& operator=(Cadena&& c) noexcept; //operador de asignación por movimiento 
-
+    Cadena &operator=(Cadena &&c) noexcept; // operador de asignación por movimiento
 
     explicit operator const char *() const;
 
@@ -71,9 +66,6 @@ public:
     const_reverse_iterator rend() const noexcept { return const_reverse_iterator(begin()); }
     const_reverse_iterator crend() const noexcept { return const_reverse_iterator(begin()); }
 
-
-
-
     //--SALIDA ESTANDAR----
     friend std::ostream &operator<<(std::ostream &, const Cadena &);
     friend std::istream &operator>>(std::istream &, Cadena &);
@@ -104,5 +96,6 @@ private:
     size_t tam_;
     char *s_;
 };
+
 
 #endif
