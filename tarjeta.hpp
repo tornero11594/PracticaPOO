@@ -11,7 +11,7 @@ class Tarjeta
     public:
     enum Tipo{Otro,VISA,Mastercard,Maestro,JCB,AmericanExpress};
     //constructores 
-    Tarjeta(const Numero&, Usuario*,const Fecha&,bool ac=true);
+    Tarjeta(const Numero&, Usuario&,const Fecha&,bool ac=true);
     Tarjeta(const Tarjeta&)=delete;
     Tarjeta& operator=(const Tarjeta&)=delete;
 

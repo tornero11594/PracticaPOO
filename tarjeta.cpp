@@ -2,7 +2,7 @@
 
 
 //IMPLEMENTACIÓN DE LA CLASE TARJETA
-Tarjeta::Tarjeta(const Numero&numerillo, Usuario*uuser,const Fecha&fechia,bool ac):num{numerillo},tit{uuser},cad{fechia},activ{true}
+Tarjeta::Tarjeta(const Numero&numerillo, Usuario&uuser,const Fecha&fechia,bool ac):num{numerillo},tit{&uuser},cad{fechia},activ{true}
 {
     //comprobamos primero si la tarjeta está caducada
     Fecha hoy;
@@ -24,6 +24,8 @@ Tarjeta::Tarjeta(const Numero&numerillo, Usuario*uuser,const Fecha&fechia,bool a
             Num_duplicado I(num);
             throw I;
         }
+        uuser.es_titular_de(*this);
+
     }
 }
 
@@ -87,11 +89,14 @@ void Tarjeta::anula_titular()
 //operador para mostrar la tarjeta por pantalla
 ostream& operator<<(ostream&os, const Tarjeta&t)
 {
+    
     os<<t.tipo()<<endl;
     os<<t.num<<endl;
-    os<<t.tit<<endl;
+    os<<t.titular()->nombre() << " " << t.titular()->apellidos()<<endl;
     os<<"Caduca: "<<t.cad.mes()<<"/"<<t.cad.anno()%100<<endl;
 
+
+    return os;
 }
 
 //comparar dos tarjetas
@@ -104,14 +109,13 @@ bool operator<(const Tarjeta&t1,const Tarjeta&t2)
 //destructor que desvinculará al usuario
 Tarjeta::~Tarjeta()
 {
-    if(!tit) //si no ha sido desvinculada, la desvinculamos
+    if (tit) // si hay titular
     {
-    const_cast<Usuario *>(tit)->no_es_titular_de(*this); 
-    tit=nullptr;
+        const_cast<Usuario*>(tit)->no_es_titular_de(*this);
     }
-
-    conjuntotarjetas.erase(num); //eliminamos la tarjeta del conjunto de números
+    conjuntotarjetas.erase(num);
 }
+
 
 
 
