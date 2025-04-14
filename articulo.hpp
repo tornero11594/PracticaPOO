@@ -32,7 +32,7 @@ class Articulo
 
 
 
-    //Pare privada
+    //Parte privada
     private:
     const Cadena codigo; //atributo inmodificable
     const Cadena tituloArt; //atributo inmodificable
