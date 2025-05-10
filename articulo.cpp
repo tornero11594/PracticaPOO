@@ -14,14 +14,16 @@ Cadena Articulo::titulo() const noexcept{return tituloArt;}
 Fecha Articulo::f_publi() const noexcept{return fechapublicacion;}
 size_t Articulo::stock() const noexcept{return numejemplares;}
 
+double Articulo::precio() const noexcept {
+    return precioArt;
+}
 
 
 //Operador de inserción CORREGIR EL FORMATO, PREGUNTAR POR CORREO AL PROFESOR
 
-std::ostream& operator<<(std::ostream& os,const Articulo&art)
-{
-    os<<"["<<art.codigo<<"]"<<" "<<art.tituloArt<<", "<<art.fechapublicacion<<". "<<fixed<<setprecision(2)<<art.precioArt<<" €"
-
-
-
+ostream& operator<<(ostream& os, const Articulo& art) {
+    os << "[" << art.referencia() << "] \"" << art.titulo() << "\", " 
+       << art.f_publi().anno() << ". " 
+       << fixed << setprecision(2) << art.precio() << " €";
+    return os;
 }

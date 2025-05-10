@@ -97,5 +97,21 @@ private:
     char *s_;
 };
 
+namespace std { // Estaremos dentro del espacio de nombres std.
+    template <> // Es una especializaci ón de una plantilla para Cadena.
+    struct hash<Cadena> { // Es una clase con solo un operador público.
+    size_t operator() (const Cadena& cad) const // El operador función.
+    {
+    hash<string> hs; // Creamos un objeto hash de string.
+    auto p{(const char*)(cad)}; // Convertimos cad a cadena de bajo nivel.
+    string s{p}; // Creamos un string desde la cadena de b. nivel .
+    size_t res{hs(s)}; // El hash del string . Como hs.operator()(s);
+    return res; // Devolvemos el hash del string .
+    // En forma abreviada:
+    // return hash<string>{}((const char*)(cad));
+    }
+    };
+    }
+
 
 #endif

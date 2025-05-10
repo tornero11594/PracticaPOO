@@ -17,7 +17,7 @@ class Numero
     public:
 
     //Constructor
-    Numero(Cadena&); //recibo una copia porque lo voy a tener que modificar
+    Numero(const Cadena&); //recibo una copia porque lo voy a tener que modificar
 
 
     //enumeracion para excepciones

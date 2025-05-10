@@ -1,231 +1,148 @@
-#include"tarjeta.hpp"
-#include"usuario.hpp"
+#include "tarjeta.hpp"
+#include "usuario.hpp"
 
-//IMPLEMENTACIÓN DE LA CLASE TARJETA
-Tarjeta::Tarjeta(const Numero&numerillo, Usuario&uuser,const Fecha&fechia,bool ac):num{numerillo},tit{&uuser},cad{fechia},activ{true}
+set<Numero> Tarjeta::conjuntotarjetas;
+
+// ========== IMPLEMENTACIÓN DE LA CLASE TARJETA ==========
+
+Tarjeta::Tarjeta(const Numero& numerillo, Usuario& uuser, const Fecha& fechia, bool ac)
+    : num{numerillo}, tit{&uuser}, cad{fechia}, activ{true}
 {
-    //comprobamos primero si la tarjeta está caducada
     Fecha hoy;
+    if (cad < hoy)
+        throw Caducada(cad);
 
-    if(cad<hoy)
-    {
-        Caducada I(cad);
-        throw I;
-    }
+    auto res = conjuntotarjetas.insert(num);
+    if (!res.second)
+        throw Num_duplicado(num);
 
-    else
-    {
-        //no está caducada, miramos si ya existe una tarjeta con ese número
-        typedef set<Numero>::iterator iterador;
-        std::pair<iterador,bool> res=conjuntotarjetas.insert(num);
-
-        if(!res.second) //inserción fallida, lanzamos excepción de número duplicado
-        {
-            Num_duplicado I(num);
-            throw I;
-        }
-        uuser.es_titular_de(*this);
-
-    }
+    uuser.es_titular_de(*this);
 }
 
-//métodos observadores
-const Numero& Tarjeta::numero() const noexcept{return num;}
-const Usuario* Tarjeta::titular() const noexcept{return tit;}
-const Fecha& Tarjeta::caducidad() const noexcept{return cad;}
-bool Tarjeta::activa() const noexcept{return activ;}
-Tarjeta::Tipo Tarjeta::tipo() const noexcept
-{   
-    const char* cadena=num;
+const Numero& Tarjeta::numero() const noexcept { return num; }
+const Usuario* Tarjeta::titular() const noexcept { return tit; }
+const Fecha& Tarjeta::caducidad() const noexcept { return cad; }
+bool Tarjeta::activa() const noexcept { return activ; }
 
-    if((cadena[0]=='3' && cadena[1]=='4') || (cadena[0]=='3' && cadena[1]=='7'))
-    return AmericanExpress;
-
-    else
-    {
-        if(cadena[0]=='3' && (cadena[1]!='7' && cadena[1]!='4'))
+Tarjeta::Tipo Tarjeta::tipo() const noexcept {
+    const char* cadena = num;
+    if ((cadena[0] == '3' && cadena[1] == '4') || (cadena[0] == '3' && cadena[1] == '7'))
+        return AmericanExpress;
+    else if (cadena[0] == '3')
         return JCB;
-
-        else 
-        {
-            if(cadena[0]=='4')
-            return VISA;
-
-            else
-            {
-                if(cadena[0]=='5')
-                return Mastercard;
-
-                else
-                {
-                    if(cadena[0]=='6')
-                        return Maestro;
-
-                    return Otro;
-                }
-            }
-
-        }
-
-    }
+    else if (cadena[0] == '4')
+        return VISA;
+    else if (cadena[0] == '5')
+        return Mastercard;
+    else if (cadena[0] == '6')
+        return Maestro;
+    else
+        return Otro;
 }
 
-//Método para activar/desactivar una tarjeta
-bool Tarjeta::activa(bool est) 
-{
-    activ=est;
+bool Tarjeta::activa(bool est) {
+    activ = est;
     return activ;
 }
 
-
-//modificador para poner la tarjeta en false y el puntero de titular a nulo
-void Tarjeta::anula_titular()
-{
-    activ=false;
-    tit=nullptr;
-    
+void Tarjeta::anula_titular() {
+    activ = false;
+    tit = nullptr;
 }
 
-//operador para mostrar la tarjeta por pantalla
-ostream& operator<<(ostream&os, const Tarjeta&t)
-{
-    
-    os<<t.tipo()<<endl;
-    os<<t.num<<endl;
-    os<<t.titular()->nombre() << " " << t.titular()->apellidos()<<endl;
-    os<<"Caduca: "<<t.cad.mes()<<"/"<<t.cad.anno()%100<<endl;
+ostream& operator<<(ostream& os, const Tarjeta& t) {
+    os << t.tipo() << '\n';
+    os << t.numero() << '\n';
 
+    // Convertir nombre y apellidos a mayúsculas temporalmente
+    Cadena nombre = t.titular()->nombre();
+    Cadena apellidos = t.titular()->apellidos();
+
+    for (auto& c : nombre) c = toupper(static_cast<unsigned char>(c));
+    for (auto& c : apellidos) c = toupper(static_cast<unsigned char>(c));
+
+    os << nombre << " " << apellidos << '\n';
+    os << "Caduca: " << setfill('0') << setw(2) << t.caducidad().mes()
+       << "/" << setw(2) << (t.caducidad().anno() % 100) << '\n';
 
     return os;
 }
 
-//comparar dos tarjetas
-bool operator<(const Tarjeta&t1,const Tarjeta&t2)
-{
-    return(t1.num<t2.num);
+ostream& operator<<(ostream& os, const Tarjeta::Tipo& tipo) {
+    switch (tipo) {
+        case Tarjeta::VISA: os << "VISA"; break;
+        case Tarjeta::Mastercard: os << "Mastercard"; break;
+        case Tarjeta::Maestro: os << "Maestro"; break;
+        case Tarjeta::JCB: os << "JCB"; break;
+        case Tarjeta::AmericanExpress: os << "American Express"; break;
+        default: os << "Tipo indeterminado"; break;
+    }
+    return os;
 }
 
+bool operator<(const Tarjeta& t1, const Tarjeta& t2) {
+    return t1.numero() < t2.numero();
+}
 
-//destructor que desvinculará al usuario
-Tarjeta::~Tarjeta()
-{
-    if (tit) // si hay titular
-    {
+Tarjeta::~Tarjeta() {
+    if (tit)
         const_cast<Usuario*>(tit)->no_es_titular_de(*this);
-    }
     conjuntotarjetas.erase(num);
 }
 
 
+Tarjeta::Caducada::Caducada(const Fecha& f) : cad(f) {}
+const Fecha& Tarjeta::Caducada::cuando() const noexcept { return cad; }
 
+Tarjeta::Num_duplicado::Num_duplicado(const Numero& n) : nume(n) {}
+const Numero& Tarjeta::Num_duplicado::que() const noexcept { return nume; }
 
+// ========== IMPLEMENTACIÓN DE LA CLASE NÚMERO ==========
 
-//IMPLEMENTACIÓN DE LA CLASE NÚMERO
-Numero::Numero(Cadena& cad) //no inicializo porque puede ser incorrecto
-{
-
-    //depuración
-    //cout<<cad.length()<<endl;
-
-    if(cad.length() >=13 && cad.length()<=19) //comprobamos que cumpla el minimo
-    {
-        //primero, debemos quitar los espacios en blanco
-        size_t j=0;
-        for(size_t i=0;i<=cad.length();++i)
-        {
-            if(cad[i]!=' ') //solo movemos cuando no sea espacio
-            {
-                cad[j++]=cad[i];
-            }
-        }
-        
-        //depuración
-        //cout<<cad.length()<<endl;
-        //cout<<cad<<endl;
-        //luego, hemos de ver si hay algún caracter no dígito
-        bool flag=false;
-
-        for(size_t i=0;i<cad.length() && !flag;++i ) //no tenemos en cuenta los espacios eliminados
-        {
-            if(!(isdigit(cad[i]))) //comprobamos si es un digito, si lo es lanzamos excepcion a partir de la bandera
-            {
-                flag=true;
-            }
-        }
-
-        if(cad.length() <13) //comprobamos que cumpla el minimo al quitarle los espacios
-        {
-            Incorrecto I(LONGITUD);
-            throw I;
-        }
-
-
-        if(flag)
-        {
-            Incorrecto I(DIGITOS);
-            throw I;
-        }
-
-       //posteriormente comprobamos si el numero de tarjeta comprendido entre 13 y 19 caracteres sin letras es valido
-        if(!luhn(cad))
-        {
-            Incorrecto I(NO_VALIDO);
-            throw I;
-        }
-
-        else
-        {
-            num=cad;
-        }
-
-    }
-    
-    else
-    {
-        Incorrecto I(LONGITUD);
-        throw I;
+Numero::Numero(const Cadena& cade) {
+    Cadena sin_espacios;
+    for (size_t i = 0; i < cade.length(); ++i) {
+        if (!isspace(static_cast<unsigned char>(cade[i])))
+            sin_espacios += Cadena(1, cade[i]);
     }
 
-}
+    if (sin_espacios.length() < 13 || sin_espacios.length() > 19)
+        throw Incorrecto(LONGITUD);
 
-Numero::operator const char*() const
-{
-   return num.operator const char *();
+    for (size_t i = 0; i < sin_espacios.length(); ++i) {
+        if (!isdigit(sin_espacios[i]))
+            throw Incorrecto(DIGITOS);
+    }
 
-}
+    if (!luhn(sin_espacios))
+        throw Incorrecto(NO_VALIDO);
 
-
-
-bool operator<(const Numero&n1, const Numero&n2)
-{
-    return(n1.num<n2.num);
-}
-
-
-Numero::Incorrecto::Incorrecto(Razon ra):raz{ra}
-{}
-
-Numero::Razon Numero::Incorrecto::razon() const noexcept
-{
-    return raz;
+    num = sin_espacios;
 }
 
 
-bool Numero::luhn(const Cadena&numero)
-{
-    size_t n = numero.length();
-    size_t suma = 0;
+Numero::operator const char*() const {
+    return num.operator const char*();
+}
+
+bool operator<(const Numero& n1, const Numero& n2) {
+    return n1.num < n2.num;
+}
+
+Numero::Incorrecto::Incorrecto(Razon ra) : raz(ra) {}
+Numero::Razon Numero::Incorrecto::razon() const noexcept { return raz; }
+
+bool Numero::luhn(const Cadena& numero) {
+    int suma = 0;
     bool alt = false;
-    for (int i = n - 1; i > -1; --i) {
-      n = numero[size_t(i)] - '0';
-      if (alt) {
-        n *= 2;
-        if (n > 9)
-      n = (n % 10) + 1;
-      }
-      alt = !alt;
-      suma += n;
+    for (int i = int(numero.length()) - 1; i >= 0; --i) {
+        int d = numero[size_t(i)] - '0';
+        if (alt) {
+            d *= 2;
+            if (d > 9) d = (d % 10) + 1;
+        }
+        alt = !alt;
+        suma += d;
     }
-    return !(suma % 10);
-
+    return (suma % 10) == 0;
 }

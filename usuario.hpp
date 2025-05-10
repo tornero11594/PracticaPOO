@@ -22,7 +22,7 @@ class Numero;
 class Clave
 {
     public:
-
+    enum Razon{CORTA,ERROR_CRYPT}; //enumerado para la clase Incorrecta
     //Constructor
     Clave(const char*); 
 
@@ -39,7 +39,6 @@ class Clave
     Cadena clavecifrada;
     static const char caracteres_validos[];
 
-    enum Razon{CORTA,ERROR_CRYPT}; //enumerado para la clase Incorrecta
 
 
 
@@ -56,8 +55,6 @@ class Clave
         public:
         //Constructor
         Incorrecta(Razon raz) noexcept;
-
-
         //Observador
         Razon razon() const noexcept;
 
@@ -69,16 +66,14 @@ class Clave
 class Usuario
 {
 
-    //declaración privada adelantada
-
-     //tarjetas de pago que posee el usuario
-     typedef map<Numero,Tarjeta*> Tarjetas;
-     //contenido del carrito
-     typedef unordered_map<Articulo*,unsigned int> Articulos;
-
-
 
     public:
+      //tarjetas de pago que posee el usuario
+      typedef map<Numero,Tarjeta*> Tarjetas;
+      //contenido del carrito
+      typedef unordered_map<Articulo*,unsigned int> Articulos;
+ 
+ 
     //Constructores
     Usuario(const Cadena&,const Cadena&,const Cadena&,const Cadena&,const Clave&);
     Usuario(const Usuario&)= delete; //indicamos que no exista constructor de copia
@@ -111,7 +106,7 @@ class Usuario
     friend ostream& operator<<(ostream&os,const Usuario&);
 
     //mostrar el carrito de la compra de un usuario
-    friend void mostrar_carro(const Articulos&a,const Usuario&);
+    friend void mostrar_carro(ostream&os,const Usuario&);
 
 
     //Destructor. Desliga las tarjetas del usuario llamando al método Tarjeta::anula_titular()
